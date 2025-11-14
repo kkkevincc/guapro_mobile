@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>AI启示 - 轻量决策辅助工具</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- 顶部用户界面 -->
+    <div class="top-user-interface">
+        <!-- 快速操作面板 -->
+        <div class="quick-actions-panel" id="quickActionsPanel">
+            <div class="quick-action-item" id="historyBtn">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                    <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+                    <polyline points="12,6 12,12 16,14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <span>历史</span>
+            </div>
+            <div class="quick-action-item" id="helpBtn">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                    <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+                    <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <line x1="12" y1="17" x2="12.01" y2="17" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+                <span>帮助</span>
+            </div>
+        </div>
+
+        <!-- 个人中心按钮 -->
+        <div class="user-center-btn" id="userCenterBtn">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 12C14.2091 12 16 10.2091 16 8C16 5.79086 14.2091 4 12 4C9.79086 4 8 5.79086 8 8C8 10.2091 9.79086 12 12 12Z" stroke="#666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M20 21V19C20 17.9391 19.5786 16.9217 18.8284 16.1716C18.0783 15.4214 17.0609 15 16 15H8C6.93913 15 5.92172 15.4214 5.17157 16.1716C4.42143 16.9217 4 17.9391 4 19V21" stroke="#666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        </div>
+
+        <!-- 通知气泡 -->
+        <div class="notification-bubble" id="notificationBubble" style="display: none;">
+            <span class="notification-count" id="notificationCount">3</span>
+        </div>
+    </div>
+
+    <!-- 启动模块 -->
+    <div id="splash" class="module splash-module">
+        <div class="page-turning">
+            <div class="page">
+                <div class="corner-decoration top-left"></div>
+                <div class="corner-decoration top-right"></div>
+                <div class="corner-decoration bottom-left"></div>
+                <div class="corner-decoration bottom-right"></div>
+                <div class="center-symbol"></div>
+            </div>
+        </div>
+        <p class="splash-text">当你困惑时，答案已在心中</p>
+        
+        <!-- 加载进度区域 -->
+        <div class="loading-area">
+            <div class="loading-progress">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+                <p class="progress-text" id="progressText">正在连接内心智慧...</p>
+            </div>
+            <div class="loading-dots">
+                <span class="dot active"></span>
+                <span class="dot"></span>
+                <span class="dot"></span>
+                <span class="dot"></span>
+            </div>
+        </div>
+        
+        <div class="login-error" style="display: none;">
+            <p>登录失败，请重试</p>
+            <button id="retryLogin">重试</button>
+        </div>
+    </div>
+
+    <!-- 场景选择模块 -->
+    <div id="scene" class="module scene-module" style="display: none;">
+        <h2 class="scene-title">选择你想解决的场景，获取专属启示</h2>
+        <div class="scene-cards">
+            <div class="scene-card" data-scene="job">
+                <p>职场选择</p>
+            </div>
+            <div class="scene-card" data-scene="love">
+                <p>情感关系</p>
+            </div>
+            <div class="scene-card" data-scene="daily">
+                <p>日常琐事</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 提问模块 -->
+    <div id="question" class="module question-module" style="display: none;">
+        <p class="question-tip">请写下你的具体困惑</p>
+        <textarea id="questionInput" placeholder="请写下你的具体困惑（如：是否接受新offer）" maxlength="50"></textarea>
+        <p id="charCount" class="char-count">0/50</p>
+        <p id="errorTip" class="error-tip" style="display: none;"></p>
+        <button id="submitQuestion">点击触发，获取启示</button>
+        <button id="switchToPlumBlossomBtn" class="secondary-btn">使用梅花易数</button>
+    </div>
+    
+    <!-- 梅花易数模块 -->
+    <div id="plumBlossom" class="module plum-blossom-module" style="display: none;">
+        <h2 class="plum-blossom-title">梅花易数</h2>
+        <p class="plum-blossom-tip">梅花易数需要时间、事件和随机数来推断</p>
+        
+        <!-- 时间选择 -->
+        <div class="form-group">
+            <label for="timeInput">预测时间</label>
+            <div class="time-input-group">
+                <input type="datetime-local" id="timeInput" class="time-input">
+                <button id="getCurrentTimeBtn" class="small-btn">当前时间</button>
+            </div>
+        </div>
+        
+        <!-- 三位数随机数选择 -->
+        <div class="form-group">
+            <label>随机三位数</label>
+            <div class="random-number-group">
+                <!-- 齿轮选择器 - 百位数 -->
+                <div class="gear-selector">
+                    <div class="gear-container">
+                        <div class="gear-wheel" id="hundredGear">
+                            <div class="gear-teeth"></div>
+                            <div class="gear-center">
+                                <span class="gear-number">0</span>
+                            </div>
+                        </div>
+                        <div class="gear-value" id="hundredValue">0</div>
+                    </div>
+                </div>
+                
+                <!-- 齿轮选择器 - 十位数 -->
+                <div class="gear-selector">
+                    <div class="gear-container">
+                        <div class="gear-wheel" id="tenGear">
+                            <div class="gear-teeth"></div>
+                            <div class="gear-center">
+                                <span class="gear-number">0</span>
+                            </div>
+                        </div>
+                        <div class="gear-value" id="tenValue">0</div>
+                    </div>
+                </div>
+                
+                <!-- 齿轮选择器 - 个位数 -->
+                <div class="gear-selector">
+                    <div class="gear-container">
+                        <div class="gear-wheel" id="unitGear">
+                            <div class="gear-teeth"></div>
+                            <div class="gear-center">
+                                <span class="gear-number">0</span>
+                            </div>
+                        </div>
+                        <div class="gear-value" id="unitValue">0</div>
+                    </div>
+                </div>
+                
+                <button id="generateRandomNumberBtn" class="small-btn">随机生成</button>
+            </div>
+        </div>
+        
+        <!-- 事件输入 -->
+        <div class="form-group">
+            <label for="eventInput">预测事件</label>
+            <textarea id="eventInput" placeholder="请描述你要预测的事件（如：事业发展、感情运势等）" maxlength="100"></textarea>
+            <p id="eventCharCount" class="char-count">0/100</p>
+        </div>
+        
+        <p id="plumBlossomErrorTip" class="error-tip" style="display: none;"></p>
+        <div class="button-group">
+            <button id="submitPlumBlossomBtn">开始推断</button>
+            <button id="backToNormalQuestionBtn" class="secondary-btn">返回普通提问</button>
+        </div>
+    </div>
+
+    <!-- 过渡模块 -->
+    <div id="transition" class="module transition-module" style="display: none;">
+        <div class="light-effect">
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+        </div>
+        <p class="transition-text">正在连接宇宙中心的能量...</p>
+        <div class="loading-spinner">
+            <p class="loading-tip">请稍候，宇宙能量正在汇聚</p>
+        </div>
+        <div class="retry-section" style="display: none;">
+            <p>网络波动，重试一次吧</p>
+            <button id="retryGenerate">重试</button>
+        </div>
+    </div>
+
+    <!-- 答案模块 -->
+    <div id="revelation" class="module revelation-module" style="display: none;">
+        <h2 class="revelation-title">你的专属启示</h2>
+        <div class="revelation-content">
+            <div class="revelation-scroll-container">
+                <div id="revelationText" class="revelation-text">正在为你呈现...</div>
+            </div>
+        </div>
+        <div class="revelation-buttons">
+            <button id="collectBtn" class="btn">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <span>收藏</span>
+            </button>
+            <button id="newQuestionBtn" class="btn">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 4v16M4 12h16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <span>重新提问</span>
+            </button>
+            <button id="knowledgeBtn" class="btn">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <span>小知识</span>
+            </button>
+            <button id="unlockBtn" class="btn">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <span>解锁更多</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- 个人中心模块 -->
+    <div id="mine" class="module mine-module" style="display: none;">
+        <div class="mine-header">
+            <button id="closeMine" class="close-btn">×</button>
+            <div class="user-info">
+                <img id="userAvatar" src="" alt="用户头像" class="user-avatar">
+                <span id="userNickname" class="user-nickname">匿名用户</span>
+            </div>
+        </div>
+        <div class="mine-list">
+            <div class="mine-item" id="myCollections">
+                <span>我的收藏</span>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M9 18l6-6-6-6" stroke="#666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </div>
+            <div class="mine-item" id="myOrders">
+                <span>付费记录</span>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M9 18l6-6-6-6" stroke="#666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </div>
+            <div class="mine-item" id="aboutProduct">
+                <span>关于产品</span>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M9 18l6-6-6-6" stroke="#666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </div>
+        </div>
+        <div class="collections-content" id="collectionsContent" style="display: none;">
+            <h3>我的收藏</h3>
+            <div id="collectionsList"></div>
+        </div>
+    </div>
+
+    <script src="js/app.js"></script>
+</body>
+</html>

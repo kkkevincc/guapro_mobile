@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>过往历史</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        /* 历史页面特定样式 */
+        .history-page {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        
+        .history-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+        
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+        
+        .header-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+        
+        .history-title {
+            font-size: 28px;
+            font-weight: 600;
+            color: #333;
+            margin: 0;
+        }
+        
+        .control-options {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .control-group {
+            display: flex;
+            align-items: center;
+        }
+        
+        .collect-toggle, .sort-toggle {
+            padding: 8px 16px;
+            border: 2px solid #6c757d;
+            background: transparent;
+            color: #6c757d;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .collect-toggle:hover, .sort-toggle:hover {
+            background: #6c757d;
+            color: white;
+        }
+        
+        .collect-toggle.active {
+            background: #6c757d;
+            color: white;
+            border-color: #6c757d;
+        }
+        
+        .collect-toggle.active .toggle-icon {
+            color: #ffc107;
+        }
+        
+        .history-list {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .history-item {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            border: 2px solid #f0f0f0;
+            border-left: 4px solid #667eea;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .history-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            border-color: #e0e0e0;
+        }
+        
+        .history-item-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 8px;
+            }
+            
+            .history-item-actions {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+            }
+            
+            .collected-icon {
+                font-size: 14px;
+                opacity: 0.7;
+                transition: opacity 0.2s ease;
+            }
+            
+            .collect-toggle-btn {
+                background: none;
+                border: none;
+                cursor: pointer;
+                padding: 4px;
+                border-radius: 50%;
+                transition: all 0.2s ease;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                width: 24px;
+                height: 24px;
+            }
+            
+            .collect-toggle-btn:hover {
+                background: rgba(0, 0, 0, 0.1);
+                transform: scale(1.1);
+            }
+            
+            .collect-toggle-btn:active {
+                transform: scale(0.95);
+            }
+        
+        .history-type {
+            background: #667eea;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .history-type.plum-blossom {
+            background: #e74c3c;
+        }
+        
+        .history-time {
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .history-question {
+            font-size: 16px;
+            font-weight: 500;
+            color: #333;
+            margin-bottom: 10px;
+            line-height: 1.5;
+        }
+        
+        .history-answer {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid #e0e0e0;
+            color: #555;
+            line-height: 1.6;
+            font-style: italic;
+        }
+        
+        .no-history {
+            text-align: center;
+            color: #999;
+            padding: 60px 20px;
+            font-size: 16px;
+        }
+        
+        .back-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            border: none;
+            padding: 10px 15px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 14px;
+            color: #667eea;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+        
+        .back-btn:hover {
+            background: white;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+        }
+        
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 80px 20px;
+            color: #999;
+            text-align: center;
+        }
+        
+        .empty-icon {
+            font-size: 48px;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+        
+        .empty-text {
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+        
+        .empty-subtext {
+            font-size: 14px;
+            color: #bbb;
+        }
+    </style>
+</head>
+<body>
+    <div class="history-page">
+        <button class="back-btn" onclick="window.location.href='index.html'">← 返回主页</button>
+        
+        <div class="history-container">
+            <div class="history-header">
+                <h1 class="history-title">过往历史</h1>
+                <div class="header-controls">
+                    <div class="control-options">
+                        <div class="control-group">
+                            <button class="collect-toggle" id="collectToggle">
+                                <span class="toggle-icon">♡</span>
+                                <span class="toggle-text">仅显示收藏</span>
+                            </button>
+                        </div>
+                        <div class="control-group">
+                            <button class="sort-toggle" id="sortToggle">
+                                <span class="toggle-icon">↕</span>
+                                <span class="toggle-text">最新在前</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="history-list" id="historyList">
+                <!-- 历史记录将动态加载到这里 -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        class HistoryManager {
+            constructor() {
+                this.historyData = this.loadHistoryData();
+                this.currentSort = 'newest';
+                this.currentFilter = 'all'; // all 或 collected
+                this.collections = this.loadCollectionsData();
+                this.initEventListeners();
+                this.renderHistory();
+            }
+            
+            // 从localStorage加载历史数据
+            loadHistoryData() {
+                const history = localStorage.getItem('app_history') || '[]';
+                const historyArray = JSON.parse(history);
+                
+                // 如果没有历史数据，添加一些示例数据
+                if (historyArray.length === 0) {
+                    const sampleHistory = [
+                        {
+                            id: 1,
+                            type: '感应答案',
+                            question: '是否应该接受这个新的工作机会？',
+                            answer: '每一个选择都是内心成长的机会。相信自己的直觉，它会引导你走向最适合的道路。勇敢地踏出舒适圈，新的挑战将带来意想不到的收获。',
+                            time: '2024-11-13 14:30:25',
+                            scene: 'job',
+                            timestamp: 1702541425000
+                        },
+                        {
+                            id: 2,
+                            type: '梅花易数',
+                            question: '感情的未来发展如何？',
+                            answer: '感情之事如流水，顺其自然方得始终。当前虽有波澜，但若以诚待人，以心换心，必能化解误会，重归于好。',
+                            time: '2024-11-12 16:45:10',
+                            scene: 'love',
+                            timestamp: 1702457110000,
+                            randomNumber: '589',
+                            eventTime: '2024-11-12 16:30:00'
+                        },
+                        {
+                            id: 3,
+                            type: '感应答案',
+                            question: '今天适合搬家吗？',
+                            answer: '时机已至，不要再犹豫。新的环境将带来新的机遇，虽然适应需要时间，但这正是成长的时候。相信自己的判断，行动吧。',
+                            time: '2024-11-11 10:15:33',
+                            scene: 'daily',
+                            timestamp: 1702347333000
+                        }
+                    ];
+                    
+                    this.saveHistoryData(sampleHistory);
+                    return sampleHistory;
+                }
+                
+                return historyArray;
+            }
+            
+            // 保存历史数据到localStorage
+            saveHistoryData(data) {
+                localStorage.setItem('app_history', JSON.stringify(data));
+            }
+            
+            // 加载收藏数据
+            loadCollectionsData() {
+                const collections = localStorage.getItem('collections') || '[]';
+                return JSON.parse(collections);
+            }
+            
+            // 初始化事件监听器
+            initEventListeners() {
+                // 收藏筛选开关
+                const collectToggle = document.getElementById('collectToggle');
+                if (collectToggle) {
+                    collectToggle.addEventListener('click', () => {
+                        if (this.currentFilter === 'collected') {
+                            this.currentFilter = 'all';
+                            collectToggle.classList.remove('active');
+                        } else {
+                            this.currentFilter = 'collected';
+                            collectToggle.classList.add('active');
+                        }
+                        this.renderHistory();
+                    });
+                }
+                
+                // 排序切换
+                const sortToggle = document.getElementById('sortToggle');
+                if (sortToggle) {
+                    sortToggle.addEventListener('click', () => {
+                        const textEl = sortToggle.querySelector('.toggle-text');
+                        if (this.currentSort === 'newest') {
+                            this.currentSort = 'oldest';
+                            if (textEl) textEl.textContent = '最旧在前';
+                        } else {
+                            this.currentSort = 'newest';
+                            if (textEl) textEl.textContent = '最新在前';
+                        }
+                        this.renderHistory();
+                    });
+                }
+                
+                // 收藏切换按钮事件（事件委托）
+                document.addEventListener('click', (e) => {
+                    if (e.target.closest('.collect-toggle-btn')) {
+                        const btn = e.target.closest('.collect-toggle-btn');
+                        const question = btn.dataset.question;
+                        const answer = btn.dataset.answer;
+                        this.toggleHistoryItemCollection(question, answer);
+                    }
+                });
+            }
+            
+            // 检查历史记录是否被收藏
+            isHistoryCollected(historyItem) {
+                return this.collections.some(collection => 
+                    collection.question === historyItem.question && 
+                    collection.answer === historyItem.answer
+                );
+            }
+            
+            // 切换历史项目的收藏状态
+            toggleHistoryItemCollection(question, answer) {
+                const questionDecode = decodeURIComponent(question);
+                const answerDecode = decodeURIComponent(answer);
+                
+                const existingIndex = this.collections.findIndex(collection => 
+                    collection.question === questionDecode && 
+                    collection.answer === answerDecode
+                );
+                
+                if (existingIndex !== -1) {
+                    // 已收藏，移除
+                    this.collections.splice(existingIndex, 1);
+                } else {
+                    // 未收藏，添加
+                    this.collections.push({
+                        question: questionDecode,
+                        answer: answerDecode,
+                        type: this.historyData.find(item => 
+                            item.question === questionDecode && item.answer === answerDecode
+                        )?.type || '感应答案',
+                        timestamp: Date.now()
+                    });
+                }
+                
+                // 保存收藏数据
+                localStorage.setItem('collections', JSON.stringify(this.collections));
+                
+                // 重新渲染以更新UI
+                this.renderHistory();
+            }
+            
+            // 渲染历史记录
+            renderHistory() {
+                const historyList = document.getElementById('historyList');
+                
+                if (this.historyData.length === 0) {
+                    historyList.innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-icon">📖</div>
+                            <div class="empty-text">暂无历史记录</div>
+                            <div class="empty-subtext">开始你的第一次占卜吧</div>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                // 首先根据过滤条件筛选数据
+                let filteredData = [...this.historyData];
+                if (this.currentFilter === 'collected') {
+                    filteredData = filteredData.filter(item => this.isHistoryCollected(item));
+                }
+                
+                // 如果过滤后没有数据，显示空状态
+                if (filteredData.length === 0) {
+                    const emptyMessage = this.currentFilter === 'collected' ? 
+                        '暂无收藏的记录' : '暂无历史记录';
+                    const emptySubtext = this.currentFilter === 'collected' ? 
+                        '快去收藏一些重要的启示吧' : '开始你的第一次占卜吧';
+                    
+                    historyList.innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-icon">📖</div>
+                            <div class="empty-text">${emptyMessage}</div>
+                            <div class="empty-subtext">${emptySubtext}</div>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                // 根据当前排序方式排序数据
+                const sortedData = [...filteredData].sort((a, b) => {
+                    if (this.currentSort === 'newest') {
+                        return b.timestamp - a.timestamp;
+                    } else {
+                        return a.timestamp - b.timestamp;
+                    }
+                });
+                
+                // 生成HTML
+                const historyHTML = sortedData.map(item => {
+                    const isPlumBlossom = item.type === '梅花易数';
+                    const typeClass = isPlumBlossom ? 'plum-blossom' : '';
+                    const extraInfo = isPlumBlossom && item.randomNumber ? 
+                        `<div class="extra-info">随机数: ${item.randomNumber}</div>` : '';
+                    const isCollected = this.isHistoryCollected(item);
+                    const collectedIcon = isCollected ? '❤️' : '🤍';
+                    const collectedTitle = isCollected ? '取消收藏' : '添加收藏';
+                    
+                    return `
+                        <div class="history-item" data-id="${item.id}">
+                            <div class="history-item-header">
+                                <span class="history-type ${typeClass}">${item.type}</span>
+                                <div class="history-item-actions">
+                                    <button class="collect-toggle-btn" 
+                                            data-question="${encodeURIComponent(item.question)}" 
+                                            data-answer="${encodeURIComponent(item.answer)}"
+                                            title="${collectedTitle}">
+                                        <span class="collected-icon">${collectedIcon}</span>
+                                    </button>
+                                    <span class="history-time">${item.time}</span>
+                                </div>
+                            </div>
+                            <div class="history-question">${item.question}</div>
+                            <div class="history-answer">${item.answer}</div>
+                            ${extraInfo}
+                        </div>
+                    `;
+                }).join('');
+                
+                historyList.innerHTML = historyHTML;
+            }
+            
+            // 添加新的历史记录
+            addHistoryRecord(type, question, answer, scene, additionalData = {}) {
+                const newRecord = {
+                    id: Date.now(),
+                    type: type,
+                    question: question,
+                    answer: answer,
+                    time: new Date().toLocaleString(),
+                    scene: scene,
+                    timestamp: Date.now(),
+                    ...additionalData
+                };
+                
+                this.historyData.unshift(newRecord);
+                this.saveHistoryData(this.historyData);
+                this.renderHistory();
+            }
+        }
+        
+        // 页面加载完成后初始化历史管理器
+        document.addEventListener('DOMContentLoaded', () => {
+            window.historyManager = new HistoryManager();
+        });
+        
+        // 模拟从主页添加历史记录的函数
+        function addHistoryRecord(type, question, answer, scene, additionalData = {}) {
+            if (window.historyManager) {
+                window.historyManager.addHistoryRecord(type, question, answer, scene, additionalData);
+            }
+        }
+        
+        // 暴露到全局，以便主页调用
+        window.addHistoryRecord = addHistoryRecord;
+    </script>
+</body>
+</html>

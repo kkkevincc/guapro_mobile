@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>模块切换测试</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .test-container {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .module {
+            width: 100%;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            color: white;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        
+        .question-module {
+            background: rgba(255, 0, 0, 0.3);
+            justify-content: flex-start;
+            padding-top: 100px;
+        }
+        
+        .plum-blossom-module {
+            background: rgba(0, 255, 0, 0.3);
+            backdrop-filter: blur(10px);
+        }
+        
+        .btn {
+            margin: 10px;
+            padding: 12px 24px;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        
+        .btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+        
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <div id="question" class="module question-module">
+            <h1>普通提问模块</h1>
+            <p>这是普通提问模块的内容</p>
+            <button class="btn" onclick="showPlumBlossom()">切换到梅花易数</button>
+            <button class="btn" onclick="hideAll()">隐藏所有</button>
+        </div>
+        
+        <div id="plumBlossom" class="module plum-blossom-module">
+            <h1>梅花易数模块</h1>
+            <p>这是梅花易数模块的内容</p>
+            <button class="btn" onclick="showQuestion()">返回普通提问</button>
+            <button class="btn" onclick="hideAll()">隐藏所有</button>
+        </div>
+    </div>
+
+    <script>
+        function showQuestion() {
+            console.log('显示普通提问模块');
+            document.getElementById('question').style.display = 'flex';
+            document.getElementById('plumBlossom').style.display = 'none';
+        }
+        
+        function showPlumBlossom() {
+            console.log('显示梅花易数模块');
+            document.getElementById('plumBlossom').style.display = 'flex';
+            document.getElementById('question').style.display = 'none';
+        }
+        
+        function hideAll() {
+            console.log('隐藏所有模块');
+            document.getElementById('question').style.display = 'none';
+            document.getElementById('plumBlossom').style.display = 'none';
+        }
+        
+        // 初始化显示普通提问模块
+        document.addEventListener('DOMContentLoaded', function() {
+            showQuestion();
+        });
+    </script>
+</body>
+</html>

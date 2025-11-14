@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>模块切换调试测试</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+            background: #f0f0f0;
+        }
+        
+        .debug-panel {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            z-index: 1000;
+            font-size: 12px;
+            max-width: 300px;
+        }
+        
+        .module {
+            position: absolute;
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            box-sizing: border-box;
+            transition: all 0.3s ease;
+        }
+        
+        .question-module {
+            background: rgba(255, 0, 0, 0.1);
+            border: 2px solid red;
+        }
+        
+        .plum-blossom-module {
+            background: rgba(0, 255, 0, 0.1);
+            border: 2px solid green;
+        }
+        
+        .btn {
+            margin: 10px;
+            padding: 10px 20px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        
+        .hidden {
+            display: none !important;
+        }
+        
+        .debug-info {
+            font-family: monospace;
+            font-size: 11px;
+            margin-top: 10px;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 4px;
+            border: 1px solid #dee2e6;
+        }
+    </style>
+</head>
+<body>
+    <div class="debug-panel">
+        <h3>模块调试面板</h3>
+        <button class="btn" onclick="showQuestion()">显示提问模块</button>
+        <button class="btn" onclick="showPlumBlossom()">显示梅花易数模块</button>
+        <button class="btn" onclick="hideAll()">隐藏所有模块</button>
+        <div class="debug-info">
+            <div id="debugDisplay"></div>
+        </div>
+    </div>
+
+    <div id="question" class="module question-module">
+        <h1 style="color: red;">提问模块</h1>
+        <p>这是提问模块的内容</p>
+        <button class="btn" onclick="showPlumBlossom()">切换到梅花易数</button>
+    </div>
+    
+    <div id="plumBlossom" class="module plum-blossom-module">
+        <h1 style="color: green;">梅花易数模块</h1>
+        <p>这是梅花易数模块的内容</p>
+        <button class="btn" onclick="showQuestion()">切换到提问模块</button>
+    </div>
+
+    <script>
+        const questionEl = document.getElementById('question');
+        const plumBlossomEl = document.getElementById('plumBlossom');
+        const debugDisplay = document.getElementById('debugDisplay');
+        
+        function updateDebugInfo() {
+            const debugInfo = {
+                'question显示状态': questionEl.style.display,
+                'question z-index': questionEl.style.zIndex,
+                'plumBlossom显示状态': plumBlossomEl.style.display,
+                'plumBlossom z-index': plumBlossomEl.style.zIndex,
+                'question计算样式': window.getComputedStyle(questionEl).display,
+                'plumBlossom计算样式': window.getComputedStyle(plumBlossomEl).display
+            };
+            
+            let html = '<h4>调试信息：</h4>';
+            for (let [key, value] of Object.entries(debugInfo)) {
+                html += `<div><strong>${key}:</strong> ${value}</div>`;
+            }
+            debugDisplay.innerHTML = html;
+        }
+        
+        function showQuestion() {
+            console.log('显示提问模块');
+            hideAll();
+            questionEl.style.display = 'flex';
+            questionEl.style.zIndex = '10';
+            updateDebugInfo();
+        }
+        
+        function showPlumBlossom() {
+            console.log('显示梅花易数模块');
+            hideAll();
+            plumBlossomEl.style.display = 'flex';
+            plumBlossomEl.style.zIndex = '10';
+            updateDebugInfo();
+        }
+        
+        function hideAll() {
+            console.log('隐藏所有模块');
+            questionEl.style.display = 'none';
+            questionEl.style.zIndex = '';
+            plumBlossomEl.style.display = 'none';
+            plumBlossomEl.style.zIndex = '';
+            updateDebugInfo();
+        }
+        
+        // 初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            hideAll();
+        });
+    </script>
+</body>
+</html>
