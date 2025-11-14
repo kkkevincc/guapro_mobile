@@ -46,7 +46,7 @@ const app = {
         // 启动模块元素
         this.loginError = this.splashModule.querySelector('.login-error');
         this.retryLoginBtn = document.getElementById('retryLogin');
-        this.loadingArea = this.splashModule.querySelector('.loading-area');
+        this.loadingAnimation = this.splashModule.querySelector('.loading-animation');
         this.progressFill = document.getElementById('progressFill');
         this.progressText = document.getElementById('progressText');
         
@@ -98,11 +98,8 @@ const app = {
         this.unitGear = document.getElementById('unitGear');
         
         // 顶部用户界面元素
-        this.quickActionsPanel = document.getElementById('quickActionsPanel');
-        this.historyBtn = document.getElementById('historyBtn');
-        this.helpBtn = document.getElementById('helpBtn');
-        this.notificationBubble = document.getElementById('notificationBubble');
-        this.notificationCount = document.getElementById('notificationCount');
+        this.userButton = document.querySelector('.user-button');
+        this.dropdownMenu = document.querySelector('.dropdown-menu');
     },
     
     // 初始化事件监听
@@ -146,23 +143,27 @@ const app = {
         this.aboutProduct.addEventListener('click', () => this.showAbout());
         
         // 顶部用户界面事件
-        this.userCenterBtn.addEventListener('click', (e) => {
+        this.userButton.addEventListener('click', (e) => {
             e.stopPropagation(); // 防止事件冒泡
-            const isPanelVisible = this.quickActionsPanel.classList.contains('show');
-            
-            if (isPanelVisible) {
-                this.hideQuickActionsPanel();
-            } else {
-                this.showQuickActionsPanel();
+            this.handleUserCenterClick();
+        });
+        
+        // 为下拉菜单项添加事件监听
+        const dropdownItems = document.querySelectorAll('.dropdown-item');
+        dropdownItems.forEach(item => {
+            item.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const action = item.dataset.action;
+                this.handleDropdownAction(action);
+                this.hideDropdownMenu();
+            });
+        });
+        
+        // 点击外部隐藏下拉菜单
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.user-button') && this.dropdownMenu.classList.contains('show')) {
+                this.hideDropdownMenu();
             }
-        });
-        this.historyBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            this.showHistory();
-        });
-        this.helpBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            this.showHelp();
         });
     },
     
@@ -220,8 +221,8 @@ const app = {
                 console.error('微信登录失败:', error);
                 
                 // 隐藏加载进度条
-                if (this.loadingArea) {
-                    this.loadingArea.style.display = 'none';
+                if (this.loadingAnimation) {
+                    this.loadingAnimation.style.display = 'none';
                 }
                 
                 this.loginError.style.display = 'block';
@@ -244,9 +245,9 @@ const app = {
     
     // 加载进度相关方法
     showLoadingProgress() {
-        if (this.loadingArea) {
-            this.loadingArea.classList.add('fade-in');
-            this.loadingArea.style.display = 'block';
+        if (this.loadingAnimation) {
+            this.loadingAnimation.classList.add('fade-in');
+            this.loadingAnimation.style.display = 'flex';
         }
     },
     
@@ -289,10 +290,10 @@ const app = {
                 
                 // 延迟执行回调，让用户看到100%
                 setTimeout(() => {
-                    if (this.loadingArea) {
-                        this.loadingArea.classList.add('fade-out');
+                    if (this.loadingAnimation) {
+                        this.loadingAnimation.classList.add('fade-out');
                         setTimeout(() => {
-                            this.loadingArea.style.display = 'none';
+                            this.loadingAnimation.style.display = 'none';
                             if (callback) callback();
                         }, 400);
                     } else if (callback) {
@@ -2528,28 +2529,43 @@ ${numberAnalysis}
 
     // ============ 顶部用户界面功能 ============
     
-    // 处理用户中心按钮点击
+    // 处理用户按钮点击
     handleUserCenterClick: function() {
-        // 检查是否已有显示的状态
-        const isPanelVisible = this.quickActionsPanel.classList.contains('show');
-        
-        if (isPanelVisible) {
-            this.hideQuickActionsPanel();
+        this.handleDropdownClick();
+    },
+    
+    // 处理下拉菜单点击
+    handleDropdownClick: function() {
+        if (this.dropdownMenu.classList.contains('show')) {
+            this.hideDropdownMenu();
         } else {
-            this.showQuickActionsPanel();
+            this.showDropdownMenu();
         }
     },
     
-    // 显示快速操作面板
-    showQuickActionsPanel: function() {
-        this.quickActionsPanel.classList.add('show');
-        // 隐藏通知气泡（模拟已读）
-        this.notificationBubble.style.display = 'none';
+    // 显示下拉菜单
+    showDropdownMenu: function() {
+        this.dropdownMenu.classList.add('show');
     },
     
-    // 隐藏快速操作面板
-    hideQuickActionsPanel: function() {
-        this.quickActionsPanel.classList.remove('show');
+    // 隐藏下拉菜单
+    hideDropdownMenu: function() {
+        this.dropdownMenu.classList.remove('show');
+    },
+    
+    // 处理下拉菜单操作
+    handleDropdownAction: function(action) {
+        switch(action) {
+            case 'history':
+                this.showHistory();
+                break;
+            case 'help':
+                this.showHelp();
+                break;
+            case 'about':
+                this.showAbout();
+                break;
+        }
     },
     
     // 保存到历史记录
@@ -2615,13 +2631,8 @@ ${numberAnalysis}
     
     // 初始化用户界面状态
     initUserInterface: function() {
-        // 监听点击外部区域隐藏面板
-        document.addEventListener('click', (e) => {
-            const isClickInsideUI = e.target.closest('.top-user-interface');
-            if (!isClickInsideUI && this.quickActionsPanel.classList.contains('show')) {
-                this.hideQuickActionsPanel();
-            }
-        });
+        // 用户界面已通过事件监听器处理，暂无额外初始化需要
+        console.log('用户界面初始化完成');
     }
 };
 
