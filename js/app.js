@@ -20,14 +20,18 @@ const app = {
     STORAGE_KEYS: {
         USER_INFO: 'userInfo',
         LAST_QUESTION: 'lastQuestion',
-        COLLECTIONS: 'collections'
+        COLLECTIONS: 'collections',
+        THEME: 'app_theme'
     },
+    // 当前主题
+    currentTheme: 'default', // 'default' 或 'purple'
     
     // 初始化函数
     init() {
         this.initElements();
         this.initEvents();
         this.loadStoredData();
+        this.initTheme();
         this.checkLoginStatus();
         this.initUserInterface();
     },
@@ -103,6 +107,9 @@ const app = {
         this.helpBtn = document.getElementById('helpBtn');
         this.notificationBubble = document.getElementById('notificationBubble');
         this.notificationCount = document.getElementById('notificationCount');
+        
+        // 主题切换元素
+        this.themeToggleBtn = document.getElementById('themeToggleBtn');
     },
     
     // 初始化事件监听
@@ -164,6 +171,9 @@ const app = {
             e.stopPropagation();
             this.showHelp();
         });
+        
+        // 主题切换事件
+        this.themeToggleBtn.addEventListener('click', () => this.toggleTheme());
     },
     
     // 检查登录状态
@@ -2612,6 +2622,41 @@ ${numberAnalysis}
                 this.hideQuickActionsPanel();
             }
         });
+    },
+    
+    // ============ 主题切换功能 ============
+    
+    // 初始化主题
+    initTheme: function() {
+        // 从本地存储加载主题
+        const savedTheme = localStorage.getItem(this.STORAGE_KEYS.THEME);
+        if (savedTheme === 'purple') {
+            this.currentTheme = 'purple';
+            document.body.classList.add('theme-purple');
+        } else {
+            this.currentTheme = 'default';
+            document.body.classList.remove('theme-purple');
+        }
+    },
+    
+    // 切换主题
+    toggleTheme: function() {
+        if (this.currentTheme === 'default') {
+            this.currentTheme = 'purple';
+            document.body.classList.add('theme-purple');
+        } else {
+            this.currentTheme = 'default';
+            document.body.classList.remove('theme-purple');
+        }
+        
+        // 保存主题选择
+        localStorage.setItem(this.STORAGE_KEYS.THEME, this.currentTheme);
+        
+        // 添加切换动画效果
+        document.body.style.transition = 'background 0.5s ease, color 0.5s ease';
+        setTimeout(() => {
+            document.body.style.transition = '';
+        }, 500);
     }
 };
 
