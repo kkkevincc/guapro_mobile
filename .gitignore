@@ -78,3 +78,10 @@ build/
 
 # Local development
 .env.local
+
+# 项目文档和测试文件（已归档到docs和tests目录）
+# 这些目录保留在仓库中，但可以忽略临时文件
+docs/*.tmp
+tests/*.tmp
+*.bak
+*.swp

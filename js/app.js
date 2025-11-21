@@ -1162,8 +1162,6 @@ const app = {
         const secondAnswer = Math.random() < 0.3 ? revelations[Math.floor(Math.random() * revelations.length)] : '';
         const combinedAnswer = secondAnswer ? `${firstAnswer} ${secondAnswer}` : firstAnswer;
         
-        console.log('选择的启示:', { firstIndex, firstAnswer, secondAnswer, combinedAnswer });
-        
         this.displayRevelation(combinedAnswer);
     },
     
@@ -1240,7 +1238,6 @@ const app = {
         const randomSeed = Math.floor(Math.random() * 1000000) + timeSeed + charCodeSum;
         const randomIndex = randomSeed % analyses.length;
         
-        console.log('梅花易数分析 - 随机索引:', randomIndex, '问题:', userInput);
         return analyses[randomIndex];
     },
     
@@ -1481,7 +1478,6 @@ const app = {
                         
                         // 检查结束信号
                         if (data === '[DONE]') {
-                            console.log('收到结束信号');
                             break;
                         }
                         
@@ -1514,15 +1510,12 @@ const app = {
                 
                 // 如果遇到[DONE]，退出循环
                 if (buffer.includes('[DONE]')) {
-                    console.log('流式响应结束');
                     break;
                 }
             }
             
             // 处理缓冲区中可能剩余的数据
-            if (buffer.trim() && buffer.includes('[DONE]')) {
-                console.log('处理剩余的结束信号');
-            }
+            // 静默处理结束信号
             
             // 等待最小停留时间
             await minDelayPromise;
@@ -1543,7 +1536,6 @@ const app = {
             console.error('AI API调用失败:', error);
             
             // API调用失败时使用梅花易数的预置卦象分析作为降级方案
-            console.log('AI接口调用失败，启用降级方案：使用预置卦象分析');
             
             // 创建一个包含当前梅花易数数据的模拟分析
             setTimeout(() => {
@@ -2594,8 +2586,6 @@ ${numberAnalysis}
             
             // 保存到localStorage
             localStorage.setItem('app_history', JSON.stringify(historyData));
-            
-            console.log('历史记录已保存:', record);
         } catch (error) {
             console.error('保存历史记录失败:', error);
         }
