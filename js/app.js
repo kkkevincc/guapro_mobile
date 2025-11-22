@@ -38,6 +38,12 @@ const app = {
     
     // 初始化DOM元素引用
     initElements() {
+        // 主题切换元素（优先获取，确保存在）
+        this.themeToggleBtn = document.getElementById('themeToggleBtn');
+        if (!this.themeToggleBtn) {
+            console.warn('主题切换按钮未找到，将在DOM加载后重试');
+        }
+        
         // 模块元素
         this.splashModule = document.getElementById('splash');
         this.sceneModule = document.getElementById('scene');
@@ -108,8 +114,10 @@ const app = {
         this.notificationBubble = document.getElementById('notificationBubble');
         this.notificationCount = document.getElementById('notificationCount');
         
-        // 主题切换元素
-        this.themeToggleBtn = document.getElementById('themeToggleBtn');
+        // 如果主题切换按钮还未获取，再次尝试
+        if (!this.themeToggleBtn) {
+            this.themeToggleBtn = document.getElementById('themeToggleBtn');
+        }
     },
     
     // 初始化事件监听
@@ -173,7 +181,14 @@ const app = {
         });
         
         // 主题切换事件
-        this.themeToggleBtn.addEventListener('click', () => this.toggleTheme());
+        if (this.themeToggleBtn) {
+            this.themeToggleBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                this.toggleTheme();
+            });
+        } else {
+            console.error('主题切换按钮未找到');
+        }
     },
     
     // 检查登录状态
@@ -2637,10 +2652,37 @@ ${numberAnalysis}
             this.currentTheme = 'default';
             document.body.classList.remove('theme-purple');
         }
+        
+        // 确保主题切换按钮存在并更新图标状态
+        if (!this.themeToggleBtn) {
+            this.themeToggleBtn = document.getElementById('themeToggleBtn');
+        }
+        
+        // 更新按钮图标状态
+        this.updateThemeToggleIcon();
+    },
+    
+    // 更新主题切换按钮图标
+    updateThemeToggleIcon: function() {
+        if (!this.themeToggleBtn) return;
+        
+        const sunIcon = this.themeToggleBtn.querySelector('.sun-icon');
+        const moonIcon = this.themeToggleBtn.querySelector('.moon-icon');
+        
+        if (this.currentTheme === 'purple') {
+            // 紫色主题：显示月亮图标
+            if (sunIcon) sunIcon.style.display = 'none';
+            if (moonIcon) moonIcon.style.display = 'block';
+        } else {
+            // 深蓝色主题：显示太阳图标
+            if (sunIcon) sunIcon.style.display = 'block';
+            if (moonIcon) moonIcon.style.display = 'none';
+        }
     },
     
     // 切换主题
     toggleTheme: function() {
+        // 切换主题状态
         if (this.currentTheme === 'default') {
             this.currentTheme = 'purple';
             document.body.classList.add('theme-purple');
@@ -2648,6 +2690,9 @@ ${numberAnalysis}
             this.currentTheme = 'default';
             document.body.classList.remove('theme-purple');
         }
+        
+        // 更新按钮图标
+        this.updateThemeToggleIcon();
         
         // 保存主题选择
         localStorage.setItem(this.STORAGE_KEYS.THEME, this.currentTheme);
@@ -2657,6 +2702,15 @@ ${numberAnalysis}
         setTimeout(() => {
             document.body.style.transition = '';
         }, 500);
+        
+        // 触发自定义事件，通知其他组件主题已更改
+        const themeChangeEvent = new CustomEvent('themeChanged', {
+            detail: { theme: this.currentTheme }
+        });
+        document.dispatchEvent(themeChangeEvent);
+        
+        // 显示切换提示
+        this.showToast(this.currentTheme === 'purple' ? '已切换到蓝紫色主题' : '已切换到深蓝色主题');
     }
 };
 

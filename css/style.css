@@ -344,28 +344,34 @@ input, textarea {
     width: 20px;
     height: 20px;
     stroke: var(--theme-text-primary);
-    transition: var(--theme-transition);
+    fill: none;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
 }
 
 .theme-icon.moon-icon {
     opacity: 0;
-    transform: rotate(-90deg) scale(0);
+    transform: translate(-50%, -50%) rotate(-90deg) scale(0);
+    pointer-events: none;
 }
 
 .theme-icon.sun-icon {
     opacity: 1;
-    transform: rotate(0deg) scale(1);
+    transform: translate(-50%, -50%) rotate(0deg) scale(1);
+    pointer-events: none;
 }
 
 body.theme-purple .theme-icon.moon-icon {
     opacity: 1;
-    transform: rotate(0deg) scale(1);
+    transform: translate(-50%, -50%) rotate(0deg) scale(1);
 }
 
 body.theme-purple .theme-icon.sun-icon {
     opacity: 0;
-    transform: rotate(90deg) scale(0);
+    transform: translate(-50%, -50%) rotate(90deg) scale(0);
 }
 
 /* 顶部用户界面容器 */
